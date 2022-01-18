@@ -28,7 +28,7 @@ func GetArticleById(id string) (user dao.Article, err error) {
 
 //GetArticlePage 获取分页
 func GetArticlePage(page int, pageSize int, userId int) (article []dao.Article, err error) {
-	if err := dao.Mysql.Where("author=?", userId).Limit(pageSize).Offset((page - 1) * pageSize).Find(&article).Error; err != nil {
+	if err := dao.Mysql.Limit(pageSize).Offset((page-1)*pageSize).Find(&article, "author=?", userId).Error; err != nil {
 		return nil, err
 	}
 	return

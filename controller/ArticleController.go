@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go-article-master/dao"
 	"go-article-master/service"
 	"strconv"
@@ -21,11 +22,21 @@ func CreateArticle(c *gin.Context) {
 
 //GetArticlePage 获取帖子分页
 func GetArticlePage(c *gin.Context) {
+	//获取url参数
 	page, _ := strconv.Atoi(c.Query("pg_id"))
 	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
 	userId, _ := strconv.Atoi(c.Query("user_id"))
 
-	res, err := service.GetArticlePage(page, pageSize, userId)
+	//进行参数校验
+	validate := dao.ArticleValidator{UserId: userId, Page: page, PageSize: pageSize}
+	err := validator.New().Struct(validate)
+	if err != nil {
+		Error(c, err.Error())
+		return
+	}
+
+	//进行分页请求
+	res, err := service.GetArticlePage(validate.Page, validate.PageSize, validate.UserId)
 	if err != nil {
 		Error(c, err.Error())
 	} else {

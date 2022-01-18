@@ -11,3 +11,9 @@ type Article struct {
 func (Article) TableName() string {
 	return "go_article"
 }
+
+type ArticleValidator struct {
+	UserId   int `binding:"required" validate:"required"`
+	Page     int `binding:"required" validate:"required,gte=1,lte=100"`
+	PageSize int `binding:"required" validate:"required,gte=1,lte=100"`
+}
