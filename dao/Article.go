@@ -6,6 +6,8 @@ type Article struct {
 	Author  string `json:"author"`
 	Content string `json:"content"`
 	Image   string `json:"image"`
+	Type    int    `json:"type"`
+	Views   int    `json:"views"`
 }
 
 func (Article) TableName() string {

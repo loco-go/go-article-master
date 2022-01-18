@@ -39,6 +39,9 @@ func main() {
 		Group.PUT("/article", controller.UpdateArticle)
 		//删除帖子
 		Group.DELETE("/article", controller.DeleteArticleById)
+		//增加和减少阅读量
+		Group.POST("/addArticle", controller.AddArticleViews)
+		Group.POST("/subArticle", controller.SubArticleViews)
 
 	}
 

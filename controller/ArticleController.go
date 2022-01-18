@@ -94,3 +94,33 @@ func DeleteArticleById(c *gin.Context) {
 		Success(c, "删除成功", id)
 	}
 }
+
+// AddArticleViews 增加阅读量
+func AddArticleViews(c *gin.Context) {
+	id, ok := c.GetQuery("id")
+	if !ok {
+		Error(c, "无效的id参数")
+		return
+	}
+	err := service.AddArticleView(id)
+	if err != nil {
+		Error(c, err.Error())
+	} else {
+		Success(c, "增加阅读量成功", err)
+	}
+}
+
+// SubArticleViews 减少阅读量
+func SubArticleViews(c *gin.Context) {
+	id, ok := c.GetQuery("id")
+	if !ok {
+		Error(c, "无效的id参数")
+		return
+	}
+	err := service.SubArticleView(id)
+	if err != nil {
+		Error(c, err.Error())
+	} else {
+		Success(c, "减少阅读量成功", err)
+	}
+}

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/jinzhu/gorm"
 	"go-article-master/dao"
 )
 
@@ -43,5 +44,17 @@ func UpdateArticle(user dao.Article, id string) (err error) {
 // DeleteArticleById 根据id删除帖子
 func DeleteArticleById(id string) (err error) {
 	err = dao.Mysql.Where("id=?", id).Delete(&dao.Article{}).Error
+	return
+}
+
+// AddArticleView 增加帖子阅读量
+func AddArticleView(id string) (err error) {
+	err = dao.Mysql.Model(&dao.Article{}).Where("id=?", id).Update("views", gorm.Expr("views + ?", 1)).Error
+	return
+}
+
+// SubArticleView 减少帖子阅读量
+func SubArticleView(id string) (err error) {
+	err = dao.Mysql.Model(&dao.Article{}).Where("id=?", id).Update("views", gorm.Expr("views - ?", 1)).Error
 	return
 }
