@@ -58,3 +58,11 @@ func SubArticleView(id string) (err error) {
 	err = dao.Mysql.Model(&dao.Article{}).Where("id=?", id).Update("views", gorm.Expr("views - ?", 1)).Error
 	return
 }
+
+//GetHotArticle 获取热门帖子
+func GetHotArticle(page int, pageSize int, ArticleType int) (article []dao.Article, err error) {
+	if err := dao.Mysql.Order("views DESC").Limit(pageSize).Offset((page-1)*pageSize).Find(&article, "type=?", ArticleType).Error; err != nil {
+		return nil, err
+	}
+	return
+}

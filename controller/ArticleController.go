@@ -124,3 +124,28 @@ func SubArticleViews(c *gin.Context) {
 		Success(c, "减少阅读量成功", err)
 	}
 }
+
+//GetHotArticle 获取热门帖子
+func GetHotArticle(c *gin.Context) {
+	//获取url参数
+	page, _ := strconv.Atoi(c.Query("pg_id"))
+	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	articleType, _ := strconv.Atoi(c.Query("type"))
+
+	//进行参数校验
+	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	err := validator.New().Struct(validate)
+	if err != nil {
+		Error(c, err.Error())
+		return
+	}
+
+	//进行分页请求
+	res, err := service.GetHotArticle(validate.Page, validate.PageSize, validate.Type)
+	if err != nil {
+		Error(c, err.Error())
+	} else {
+		Success(c, "请求成功", res)
+	}
+	return
+}

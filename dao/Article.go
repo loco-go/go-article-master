@@ -19,3 +19,9 @@ type ArticleValidator struct {
 	Page     int `binding:"required" validate:"required,gte=1,lte=100"`
 	PageSize int `binding:"required" validate:"required,gte=1,lte=100"`
 }
+
+type HotValidator struct {
+	Type     int `validate:"required"`
+	Page     int `validate:"required,gte=1,lte=100"`
+	PageSize int `validate:"required,gte=1,lte=100"`
+}

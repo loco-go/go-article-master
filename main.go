@@ -42,7 +42,8 @@ func main() {
 		//增加和减少阅读量
 		Group.POST("/addArticle", controller.AddArticleViews)
 		Group.POST("/subArticle", controller.SubArticleViews)
-
+		//获取热门帖子
+		Group.GET("/articles/hot", controller.GetHotArticle)
 	}
 
 	//运行8080端口
