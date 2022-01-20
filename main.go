@@ -44,6 +44,7 @@ func main() {
 		Group.POST("/subArticle", controller.SubArticleViews)
 		//获取热门帖子
 		Group.GET("/articles/hot", controller.GetHotArticle)
+		Group.GET("/articles/hotC", controller.GetArticleCache)
 	}
 
 	//运行8080端口
