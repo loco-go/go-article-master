@@ -153,35 +153,41 @@ func GetHotArticle(c *gin.Context) {
 	return
 }
 
-func GetArticleCache(b *gin.Context) {
-	// 设置超时时间和清理时间
-	c := cache.New(2*time.Minute, 2*time.Minute)
+// 设置超时时间和清理时间
+var cacheData = cache.New(1*time.Minute, 1*time.Minute)
 
-	// 设置缓存值并带上过期时间
-	c.Set("foo", "bar", cache.DefaultExpiration)
+//GetArticleCache 进行缓存处理
+func GetArticleCache(c *gin.Context) {
 
-	// 设置没有过期时间的KEY，这个KEY不会被自动清除，想清除使用：c.Delete("baz")
-	c.Set("baz", 42, cache.NoExpiration)
-	var foo interface{}
-	var found bool
-	// 获取值
-	foo, found = c.Get("foo")
-	if found {
-		fmt.Println(foo)
+	//获取url参数
+	page, _ := strconv.Atoi(c.Query("pg_id"))
+	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	articleType, _ := strconv.Atoi(c.Query("type"))
+
+	//进行参数校验
+	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	err := validator.New().Struct(validate)
+	if err != nil {
+		Error(c, err.Error())
+		return
 	}
 
-	var foos string
-	// 获取值， 并断言
-	if x, found := c.Get("foo"); found {
-		foos = x.(string)
-		fmt.Println(foos)
+	//进行缓存
+	var hotArticle []dao.Article
+	x, found := cacheData.Get("hotArticle")
+	if !found {
+		//进行分页请求
+		res, err := service.GetHotArticle(validate.Page, validate.PageSize, validate.Type)
+		if err != nil {
+			Error(c, err.Error())
+		} else {
+			Success(c, "请求成功", res)
+		}
+		cacheData.Set("hotArticle", res, cache.DefaultExpiration)
+		fmt.Println("缓存更新")
+		return
+	} else {
+		hotArticle = x.([]dao.Article)
+		Success(c, "请求成功", hotArticle)
 	}
-	// 对结构体指针进行操作
-	var my *dao.Article
-	c.Set("foo", &dao.Article{Title: "NameName"}, cache.DefaultExpiration)
-	if x, found := c.Get("foo"); found {
-		my = x.(*dao.Article)
-		// ...
-	}
-	fmt.Println(my)
 }
