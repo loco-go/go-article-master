@@ -20,6 +20,11 @@ func main() {
 	//绑定模型
 	Db.AutoMigrate(&dao.User{}, &dao.Article{})
 
+	//连接redis
+	if err := dao.InitClient(); err != nil {
+		return
+	}
+
 	//运行多个端口进程
 	s1 := &http.Server{
 		Addr:         ":8080",

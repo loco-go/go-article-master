@@ -39,6 +39,8 @@ func Router() *gin.Engine {
 		Group.GET("/articles/hot", controller.GetHotArticle)
 		//获取缓存热门帖子
 		Group.GET("/articles/hotCache", controller.GetArticleCache)
+
+		Group.GET("/articles/hotRedis", controller.GetArticleRedis)
 	}
 	return r
 }

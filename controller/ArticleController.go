@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -188,6 +190,49 @@ func GetArticleCache(c *gin.Context) {
 		return
 	} else {
 		hotArticle = x.([]dao.Article)
+		Success(c, "请求成功", hotArticle)
+	}
+}
+
+func GetArticleRedis(c *gin.Context) {
+
+	//获取url参数
+	page, _ := strconv.Atoi(c.Query("pg_id"))
+	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	articleType, _ := strconv.Atoi(c.Query("type"))
+
+	//进行参数校验
+	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	err := validator.New().Struct(validate)
+	if err != nil {
+		Error(c, err.Error())
+		return
+	}
+
+	//进行缓存
+	var hotArticle []dao.Article
+	ctx := context.Background()
+
+	val, err := dao.Rdb.Get(ctx, "hotArticle").Result()
+
+	if err != nil {
+		//进行分页请求
+		res, err := service.GetHotArticle(validate.Page, validate.PageSize, validate.Type)
+		if err != nil {
+			Error(c, err.Error())
+		} else {
+			Success(c, "请求成功", res)
+		}
+		resJson, _ := json.Marshal(res)
+		err = dao.Rdb.Set(ctx, "hotArticle", resJson, 1*time.Minute).Err()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("redis缓存更新")
+		return
+	} else {
+		//反序列化
+		json.Unmarshal([]byte(val), &hotArticle)
 		Success(c, "请求成功", hotArticle)
 	}
 }
