@@ -32,14 +32,13 @@ func Router() *gin.Engine {
 		//删除帖子
 		Group.DELETE("/article", controller.DeleteArticleById)
 
-		//增加和减少阅读量
+		//增加阅读量
 		Group.POST("/addArticle", controller.AddArticleViews)
-		Group.POST("/subArticle", controller.SubArticleViews)
 		//获取热门帖子
 		Group.GET("/articles/hot", controller.GetHotArticle)
 		//获取缓存热门帖子
 		Group.GET("/articles/hotCache", controller.GetArticleCache)
-
+		//获取redis缓存热门帖子
 		Group.GET("/articles/hotRedis", controller.GetArticleRedis)
 	}
 	return r

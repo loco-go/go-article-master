@@ -115,21 +115,6 @@ func AddArticleViews(c *gin.Context) {
 	}
 }
 
-// SubArticleViews 减少阅读量
-func SubArticleViews(c *gin.Context) {
-	id, ok := c.GetQuery("id")
-	if !ok {
-		Error(c, "无效的id参数")
-		return
-	}
-	err := service.SubArticleView(id)
-	if err != nil {
-		Error(c, err.Error())
-	} else {
-		Success(c, "减少阅读量成功", err)
-	}
-}
-
 //GetHotArticle 获取热门帖子
 func GetHotArticle(c *gin.Context) {
 	//获取url参数
@@ -156,7 +141,7 @@ func GetHotArticle(c *gin.Context) {
 }
 
 // 设置超时时间和清理时间
-var cacheData = cache.New(1*time.Minute, 1*time.Minute)
+var cacheData = cache.New(60*time.Minute, 1*time.Minute)
 
 //GetArticleCache 进行缓存处理
 func GetArticleCache(c *gin.Context) {
@@ -224,7 +209,7 @@ func GetArticleRedis(c *gin.Context) {
 			Success(c, "请求成功", res)
 		}
 		resJson, _ := json.Marshal(res)
-		err = dao.Rdb.Set(ctx, "hotArticle", resJson, 1*time.Minute).Err()
+		err = dao.Rdb.Set(ctx, "hotArticle", resJson, 60*time.Minute).Err()
 		if err != nil {
 			panic(err)
 		}
