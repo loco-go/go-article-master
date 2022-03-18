@@ -118,12 +118,12 @@ func AddArticleViews(c *gin.Context) {
 //GetHotArticle 获取热门帖子
 func GetHotArticle(c *gin.Context) {
 	//获取url参数
-	page, _ := strconv.Atoi(c.Query("pg_id"))
-	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
-	articleType, _ := strconv.Atoi(c.Query("type"))
+	//page, _ := strconv.Atoi(c.Query("pg_id"))
+	//pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	//articleType, _ := strconv.Atoi(c.Query("type"))
 
 	//进行参数校验
-	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	validate := dao.HotValidator{Type: 1, Page: 1, PageSize: 10}
 	err := validator.New().Struct(validate)
 	if err != nil {
 		Error(c, err.Error())
@@ -147,12 +147,12 @@ var cacheData = cache.New(60*time.Minute, 1*time.Minute)
 func GetArticleCache(c *gin.Context) {
 
 	//获取url参数
-	page, _ := strconv.Atoi(c.Query("pg_id"))
-	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
-	articleType, _ := strconv.Atoi(c.Query("type"))
+	//page, _ := strconv.Atoi(c.Query("pg_id"))
+	//pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	//articleType, _ := strconv.Atoi(c.Query("type"))
 
 	//进行参数校验
-	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	validate := dao.HotValidator{Type: 1, Page: 1, PageSize: 10}
 	err := validator.New().Struct(validate)
 	if err != nil {
 		Error(c, err.Error())
@@ -182,12 +182,12 @@ func GetArticleCache(c *gin.Context) {
 func GetArticleRedis(c *gin.Context) {
 
 	//获取url参数
-	page, _ := strconv.Atoi(c.Query("pg_id"))
-	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
-	articleType, _ := strconv.Atoi(c.Query("type"))
+	//page, _ := strconv.Atoi(c.Query("pg_id"))
+	//pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	//articleType, _ := strconv.Atoi(c.Query("type"))
 
 	//进行参数校验
-	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	validate := dao.HotValidator{Type: 1, Page: 1, PageSize: 10}
 	err := validator.New().Struct(validate)
 	if err != nil {
 		Error(c, err.Error())

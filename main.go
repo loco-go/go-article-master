@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"go-article-master/dao"
 	"go-article-master/router"
@@ -21,9 +22,12 @@ func main() {
 	Db.AutoMigrate(&dao.User{}, &dao.Article{})
 
 	//连接redis
-	if err := dao.InitClient(); err != nil {
+	err := dao.InitClient()
+	if err != nil {
+		panic("failed to connect redis")
 		return
 	}
+	gin.SetMode(gin.ReleaseMode)
 
 	//运行多个端口进程
 	s1 := &http.Server{
