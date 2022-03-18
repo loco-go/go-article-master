@@ -15,11 +15,15 @@ func Router() *gin.Engine {
 		Group.POST("/users", controller.CreateUser)
 		//查看用户
 		Group.GET("/users", controller.GetUserList)
+		//通过用户id查找
 		Group.GET("/users/:id", controller.GetUserById)
 		//修改用户
 		Group.PUT("/users/:id", controller.UpdateUser)
 		//删除用户
 		Group.DELETE("/users/:id", controller.DeleteUserById)
+
+		//获取docker网络的用户
+		Group.GET("/users/dockerUsers", controller.GetDockerNetUser)
 
 		//增加帖子
 		Group.POST("/article", controller.CreateArticle)
@@ -40,6 +44,8 @@ func Router() *gin.Engine {
 		Group.GET("/articles/hotCache", controller.GetArticleCache)
 		//获取redis缓存热门帖子
 		Group.GET("/articles/hotRedis", controller.GetArticleRedis)
+		//获取docker网络的帖子
+		Group.GET("/articles/dockerArticle", controller.GetDockerNetArticle)
 	}
 	return r
 }

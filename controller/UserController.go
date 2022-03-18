@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"go-article-master/dao"
 	"go-article-master/service"
+	"io/ioutil"
+	"net/http"
 )
 
 //CreateUser 创建用户信息
@@ -76,4 +79,21 @@ func DeleteUserById(c *gin.Context) {
 	} else {
 		Success(c, "删除成功", id)
 	}
+}
+
+//GetDockerNetUser 获取docker网络的用户信息
+func GetDockerNetUser(c *gin.Context) {
+	//发送get请求
+	resp, err := http.Get("http://docker-go-client:8080/users/")
+	if err != nil {
+		Error(c, err.Error())
+		return
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	var userList dao.ResultUser
+
+	json.Unmarshal(body, &userList)
+	Success(c, "请求成功", userList.Data)
 }

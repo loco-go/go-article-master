@@ -9,6 +9,8 @@ import (
 	"github.com/patrickmn/go-cache"
 	"go-article-master/dao"
 	"go-article-master/service"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -117,16 +119,9 @@ func AddArticleViews(c *gin.Context) {
 
 //GetHotArticle 获取热门帖子
 func GetHotArticle(c *gin.Context) {
-	//获取url参数
-	//page, _ := strconv.Atoi(c.Query("pg_id"))
-	//pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
-	//articleType, _ := strconv.Atoi(c.Query("type"))
-
-	//进行参数校验
-	validate := dao.HotValidator{Type: 1, Page: 1, PageSize: 10}
-	err := validator.New().Struct(validate)
-	if err != nil {
-		Error(c, err.Error())
+	//参数校验
+	validate, err, done := ParameterCheck(c)
+	if done {
 		return
 	}
 
@@ -146,16 +141,9 @@ var cacheData = cache.New(60*time.Minute, 1*time.Minute)
 //GetArticleCache 进行缓存处理
 func GetArticleCache(c *gin.Context) {
 
-	//获取url参数
-	//page, _ := strconv.Atoi(c.Query("pg_id"))
-	//pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
-	//articleType, _ := strconv.Atoi(c.Query("type"))
-
-	//进行参数校验
-	validate := dao.HotValidator{Type: 1, Page: 1, PageSize: 10}
-	err := validator.New().Struct(validate)
-	if err != nil {
-		Error(c, err.Error())
+	//参数校验
+	validate, _, done := ParameterCheck(c)
+	if done {
 		return
 	}
 
@@ -181,16 +169,9 @@ func GetArticleCache(c *gin.Context) {
 
 func GetArticleRedis(c *gin.Context) {
 
-	//获取url参数
-	//page, _ := strconv.Atoi(c.Query("pg_id"))
-	//pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
-	//articleType, _ := strconv.Atoi(c.Query("type"))
-
-	//进行参数校验
-	validate := dao.HotValidator{Type: 1, Page: 1, PageSize: 10}
-	err := validator.New().Struct(validate)
-	if err != nil {
-		Error(c, err.Error())
+	//参数校验
+	validate, err, done := ParameterCheck(c)
+	if done {
 		return
 	}
 
@@ -220,4 +201,45 @@ func GetArticleRedis(c *gin.Context) {
 		json.Unmarshal([]byte(val), &hotArticle)
 		Success(c, "请求成功", hotArticle)
 	}
+}
+
+//ParameterCheck 参数校验
+func ParameterCheck(c *gin.Context) (dao.HotValidator, error, bool) {
+	//获取url参数
+	page, _ := strconv.Atoi(c.Query("pg_id"))
+	pageSize, _ := strconv.Atoi(c.Query("pg_sz"))
+	articleType, _ := strconv.Atoi(c.Query("type"))
+
+	//进行参数校验
+	validate := dao.HotValidator{Type: articleType, Page: page, PageSize: pageSize}
+	err := validator.New().Struct(validate)
+	if err != nil {
+		Error(c, err.Error())
+		return dao.HotValidator{}, nil, true
+	}
+	return validate, err, false
+}
+
+//GetDockerNetArticle 获取docker网络的帖子
+func GetDockerNetArticle(c *gin.Context) {
+	//参数校验
+	validate, err, done := ParameterCheck(c)
+	if done {
+		return
+	}
+
+	//发送get请求
+	resp, err := http.Get("http://docker-go-server:8081/articles/hot?" + "pg_id=" + strconv.Itoa(validate.Page) + "&pg_sz=" + strconv.Itoa(validate.PageSize) + "&type=" + strconv.Itoa(validate.Type))
+	if err != nil {
+		fmt.Println(err.Error())
+		Error(c, err.Error())
+		return
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	var articleList dao.ResultArticle
+
+	json.Unmarshal(body, &articleList)
+	Success(c, "请求成功", articleList.Data)
 }

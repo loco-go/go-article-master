@@ -13,3 +13,9 @@ type User struct {
 func (User) TableName() string {
 	return "go_user"
 }
+
+type ResultUser struct {
+	Code string `json:"code"`
+	Data []User `json:"data"`
+	Msg  string `json:"msg"`
+}

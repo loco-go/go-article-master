@@ -25,3 +25,9 @@ type HotValidator struct {
 	Page     int `validate:"required,gte=1,lte=100"`
 	PageSize int `validate:"required,gte=1,lte=100"`
 }
+
+type ResultArticle struct {
+	Code string    `json:"code"`
+	Data []Article `json:"data"`
+	Msg  string    `json:"msg"`
+}
