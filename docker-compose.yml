@@ -1,0 +1,36 @@
+version: '3'
+services:
+  docker-go-client:
+    container_name: docker-go-client
+    build:
+      dockerfile: Dockerfile-client
+    ports:
+     - "8080:8080"
+    #networks:
+     #- docker-go-demo
+    deploy:
+     resources:
+        limits:
+          memory: 500M
+  docker-go-server:
+    container_name: docker-go-server
+    build:
+      dockerfile: Dockerfile-server
+    ports:
+     - "8081:8081"
+    #networks:
+     #- docker-go-demo
+    deploy:
+     resources:
+        limits:
+          memory: 500M
+  redis:
+    container_name: redis-go
+    image: redis:latest
+    #networks:
+     #- docker-go-demo
+    
+networks:
+  default:
+    external:
+      name: go-net

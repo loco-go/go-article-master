@@ -13,8 +13,8 @@ var (
 // 初始化连接
 func InitClient() (err error) {
 	Rdb = redis.NewClient(&redis.Options{
-		Addr:     "123.56.192.106:6379",
-		Password: "$Sd59656422^&",
+		Addr:     "redis-go:6379",
+		Password: "",
 		DB:       0,   // use default DB
 		PoolSize: 100, // 连接池大小
 	})
